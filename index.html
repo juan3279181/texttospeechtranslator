@@ -5,15 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fixed Multi-Language Translator</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
-        .container { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); width: 90%; max-width: 600px; }
-        .controls { display: flex; gap: 10px; margin-bottom: 10px; }
-        select, button { padding: 12px; border-radius: 8px; border: 1px solid #ddd; }
-        select { flex: 1; }
-        textarea { width: 100%; height: 120px; padding: 15px; border: 1px solid #eee; border-radius: 8px; box-sizing: border-box; resize: none; margin-bottom: 10px; font-size: 16px; }
-        .btns { display: flex; gap: 10px; }
-        #translate-btn { background: #007bff; color: white; border: none; flex: 2; font-weight: bold; cursor: pointer; }
-        #audio-btn { background: #28a745; color: white; border: none; flex: 1; font-weight: bold; cursor: pointer; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; color: #333; }
+        .container { background: white; padding: 30px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); width: 90%; max-width: 650px; text-align: center; }
+        h2 { margin-top: 0; color: #4a4a4a; font-size: 28px; }
+        .controls { display: flex; gap: 12px; margin-bottom: 20px; align-items: center; }
+        select, button { padding: 12px; border-radius: 10px; border: 1px solid #ddd; font-size: 15px; outline: none; transition: all 0.3s; }
+        select:focus { border-color: #667eea; }
+        #swap-btn { background: #f8f9fa; cursor: pointer; border: 1px solid #ddd; }
+        #swap-btn:hover { background: #e2e6ea; }
+        textarea { width: 100%; height: 140px; padding: 15px; border: 1px solid #eee; border-radius: 10px; box-sizing: border-box; resize: none; margin-bottom: 15px; font-size: 16px; background: #fafafa; }
+        textarea:focus { border-color: #667eea; background: #fff; }
+        .btns { display: flex; gap: 12px; }
+        button { cursor: pointer; font-weight: 600; }
+        #translate-btn { background: #667eea; color: white; border: none; flex: 2; box-shadow: 0 4px 10px rgba(102, 126, 234, 0.3); }
+        #translate-btn:hover { background: #5a67d8; transform: translateY(-1px); }
+        #audio-btn { background: #48bb78; color: white; border: none; flex: 1; box-shadow: 0 4px 10px rgba(72, 187, 120, 0.3); }
+        #audio-btn:hover { background: #38a169; transform: translateY(-1px); }
+        .footer { margin-top: 25px; font-size: 13px; color: #888; border-top: 1px solid #eee; padding-top: 15px; }
     </style>
 </head>
 <body>
@@ -22,14 +30,17 @@
     <h2>Global Translator</h2>
     <div class="controls">
         <select id="from-lang"><option value="en-GB">English</option></select>
-        <button id="swap-btn">⇄</button>
+        <button id="swap-btn" title="Swap Languages">⇄</button>
         <select id="to-lang"></select>
     </div>
-    <textarea id="input-text" placeholder="Type here..."></textarea>
-    <textarea id="output-text" placeholder="Result..." readonly></textarea>
+    <textarea id="input-text" placeholder="Type something to translate..."></textarea>
+    <textarea id="output-text" placeholder="Translation will appear here..." readonly></textarea>
     <div class="btns">
-        <button id="translate-btn">Translate</button>
+        <button id="translate-btn">Translate Now</button>
         <button id="audio-btn">🔊 Listen</button>
+    </div>
+    <div class="footer">
+        © 2024 Global Translator Tool • Free & Fast
     </div>
 </div>
 
@@ -95,5 +106,11 @@
         toSelect.value = temp;
     };
 </script>
+
+<!-- Monetag Ads -->
+<script>(function(s){s.dataset.zone='10984060',s.src='https://al5sm.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
+<script>(function(s){s.dataset.zone='10984062',s.src='https://nap5k.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
+<script>(function(s){s.dataset.zone='10984063',s.src='https://n6wxm.com/vignette.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
+
 </body>
 </html>
