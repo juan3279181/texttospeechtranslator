@@ -3,92 +3,96 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fixed Multi-Language Translator</title>
+    <title>Translator Pro (Live Fix)</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
-        .container { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); width: 90%; max-width: 600px; }
-        .controls { display: flex; gap: 10px; margin-bottom: 10px; }
-        select, button { padding: 12px; border-radius: 8px; border: 1px solid #ddd; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f8f9fa; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        .container { background: #fff; padding: 25px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); width: 90%; max-width: 600px; }
+        .controls { display: flex; gap: 10px; margin-bottom: 15px; }
+        select, button { padding: 12px; border-radius: 8px; border: 1px solid #ddd; font-size: 14px; }
         select { flex: 1; }
-        textarea { width: 100%; height: 120px; padding: 15px; border: 1px solid #eee; border-radius: 8px; box-sizing: border-box; resize: none; margin-bottom: 10px; font-size: 16px; }
-        .btns { display: flex; gap: 10px; }
+        textarea { width: 100%; height: 120px; padding: 15px; border: 1px solid #eee; border-radius: 8px; box-sizing: border-box; resize: none; margin-bottom: 10px; font-size: 16px; background: #fafafa; }
+        .action-btns { display: flex; gap: 10px; }
         #translate-btn { background: #007bff; color: white; border: none; flex: 2; font-weight: bold; cursor: pointer; }
         #audio-btn { background: #28a745; color: white; border: none; flex: 1; font-weight: bold; cursor: pointer; }
+        .status { font-size: 12px; color: #888; text-align: center; margin-top: 10px; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>Global Translator</h2>
+    <h2>Live Translator</h2>
     <div class="controls">
-        <select id="from-lang"><option value="en-GB">English</option></select>
+        <select id="from-lang"><option value="en">English</option></select>
         <button id="swap-btn">⇄</button>
         <select id="to-lang"></select>
     </div>
     <textarea id="input-text" placeholder="Type here..."></textarea>
-    <textarea id="output-text" placeholder="Result..." readonly></textarea>
-    <div class="btns">
-        <button id="translate-btn">Translate</button>
+    <textarea id="output-text" placeholder="Translation..." readonly></textarea>
+    <div class="action-btns">
+        <button id="translate-btn">Translate Now</button>
         <button id="audio-btn">🔊 Listen</button>
     </div>
+    <div id="status-msg" class="status">Ready</div>
 </div>
 
 <script>
     const languages = {
-        "en-GB": "English", "es-ES": "Spanish", "fr-FR": "French", "de-DE": "German", 
-        "it-IT": "Italian", "hi-IN": "Hindi", "ja-JP": "Japanese", "ko-KR": "Korean",
-        "zh-CN": "Chinese", "ru-RU": "Russian", "ar-SA": "Arabic", "pt-PT": "Portuguese"
+        "en": "English", "es": "Spanish", "fr": "French", "de": "German", "it": "Italian", 
+        "hi": "Hindi", "ja": "Japanese", "ko": "Korean", "zh": "Chinese", "ru": "Russian", "ar": "Arabic"
     };
 
     const fromSelect = document.getElementById("from-lang");
     const toSelect = document.getElementById("to-lang");
     const inputText = document.getElementById("input-text");
     const outputText = document.getElementById("output-text");
+    const statusMsg = document.getElementById("status-msg");
 
-    // Populate Lists
+    // Populate Languages
     Object.entries(languages).forEach(([code, name]) => {
-        if(code !== "en-GB") fromSelect.add(new Option(name, code));
+        if(code !== "en") fromSelect.add(new Option(name, code));
         toSelect.add(new Option(name, code));
     });
-    toSelect.value = "es-ES";
+    toSelect.value = "es";
 
-    // Translation Fix: Using a direct URL method that browsers rarely block
-    document.getElementById("translate-btn").onclick = function() {
+    // TRANSLATION LOGIC (With CORS Fix)
+    document.getElementById("translate-btn").onclick = async () => {
         const text = inputText.value.trim();
         if(!text) return;
         
-        outputText.value = "Translating...";
-        const from = fromSelect.value;
-        const to = toSelect.value;
+        statusMsg.innerText = "Translating...";
+        outputText.value = "Please wait...";
+
+        // Use a CORS proxy to bypass browser blocks on Vercel
+        const proxy = "https://corsproxy.io?";
+        const targetUrl = `https://translated.net{encodeURIComponent(text)}&langpair=${fromSelect.value}|${toSelect.value}`;
         
-        // Using MyMemory API with a fallback error catch
-        const url = `https://translated.net{encodeURIComponent(text)}&langpair=${from}|${to}`;
-        
-        fetch(url)
-            .then(res => res.json())
-            .then(data => {
-                if(data.responseData.translatedText) {
-                    outputText.value = data.responseData.translatedText;
-                } else {
-                    outputText.value = "Error: Daily limit reached.";
-                }
-            })
-            .catch(() => {
-                outputText.value = "Connection error. Try on a live server.";
-            });
+        try {
+            const res = await fetch(proxy + encodeURIComponent(targetUrl));
+            const data = await res.json();
+            
+            if(data.responseData) {
+                outputText.value = data.responseData.translatedText;
+                statusMsg.innerText = "Translation Complete";
+            } else {
+                throw new Error("API Limit reached.");
+            }
+        } catch (err) {
+            outputText.value = "Error: " + err.message;
+            statusMsg.innerText = "Failed. Try refreshing.";
+        }
     };
 
-    // Audio Fix: Ensure voice is set correctly
-    document.getElementById("audio-btn").onclick = function() {
-        if (!outputText.value || outputText.value === "Translating...") return;
+    // AUDIO LOGIC
+    document.getElementById("audio-btn").onclick = () => {
+        if(!outputText.value || outputText.value.includes("...")) return;
         
         const utterance = new SpeechSynthesisUtterance(outputText.value);
-        utterance.lang = toSelect.value; // Matches the language sound
-        window.speechSynthesis.cancel(); // Clear any pending speech
+        utterance.lang = toSelect.value;
+        window.speechSynthesis.cancel(); 
         window.speechSynthesis.speak(utterance);
     };
 
-    // Swap Logic
+    // SWAP LOGIC
     document.getElementById("swap-btn").onclick = () => {
         const temp = fromSelect.value;
         fromSelect.value = toSelect.value;
